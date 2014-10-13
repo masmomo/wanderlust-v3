@@ -152,6 +152,20 @@ if(empty($act)){
             <li><a href="<?php echo $prefix_url.'news';?>">News</a></li>
           </ul>
         </li>
+
+        <li <?php echo $header_pages;?>><a data-toggle="dropdown" href="#">Partner</a>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+            <li><a href="<?php echo $prefix_url;?>store-city">City</a></li>
+            <li><a href="<?php echo $prefix_url;?>store">Partner</a></li>
+          </ul>
+        </li>
+
+        <li <?php echo $header_pages;?>><a data-toggle="dropdown" href="#">Career</a>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+            <li><a href="<?php echo $prefix_url;?>career-department">Department</a></li>
+            <li><a href="<?php echo $prefix_url;?>career">Jobs</a></li>
+          </ul>
+        </li>
         
       </ul>
       
