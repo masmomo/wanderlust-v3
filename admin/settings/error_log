@@ -1,0 +1,1 @@
+[05-Sep-2014 06:18:10 UTC] PHP Fatal error:  Call to undefined function get_general() in /home/antikode/public_html/wanderlust/admin/settings/control.php on line 2

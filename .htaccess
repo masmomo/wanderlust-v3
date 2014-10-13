@@ -1,0 +1,826 @@
+# Apache configuration file
+# httpd.apache.org/docs/2.2/mod/quickreference.html
+
+# Note .htaccess files are an overhead, this logic should be in your Apache
+# config if possible: httpd.apache.org/docs/2.2/howto/htaccess.html
+
+# Techniques in here adapted from all over, including:
+#   Kroc Camen: camendesign.com/.htaccess
+#   perishablepress.com/press/2006/01/10/stupid-htaccess-tricks/
+#   Sample .htaccess file of CMS MODx: modxcms.com
+
+
+# ----------------------------------------------------------------------
+# Better website experience for IE users
+# ----------------------------------------------------------------------
+
+# Force the latest IE version, in various cases when it may fall back to IE7 mode
+#  github.com/rails/rails/commit/123eb25#commitcomment-118920
+# Use ChromeFrame if it's installed for a better experience for the poor IE folk
+
+<IfModule mod_headers.c>
+  Header set X-UA-Compatible "IE=Edge,chrome=1"
+  # mod_headers can't match by content-type, but we don't want to send this header on *everything*...
+  <FilesMatch "\.(js|css|gif|png|jpe?g|pdf|xml|oga|ogg|m4a|ogv|mp4|m4v|webm|svg|svgz|eot|ttf|otf|woff|ico|webp|appcache|manifest|htc|crx|oex|xpi|safariextz|vcf)$" >
+    Header unset X-UA-Compatible
+  </FilesMatch>
+</IfModule>
+
+
+# ----------------------------------------------------------------------
+# Cross-domain AJAX requests
+# ----------------------------------------------------------------------
+
+# Serve cross-domain Ajax requests, disabled by default.
+# enable-cors.org
+# code.google.com/p/html5security/wiki/CrossOriginRequestSecurity
+
+#  <IfModule mod_headers.c>
+#    Header set Access-Control-Allow-Origin "*"
+#  </IfModule>
+
+
+# ----------------------------------------------------------------------
+# CORS-enabled images (@crossorigin)
+# ----------------------------------------------------------------------
+
+# Send CORS headers if browsers request them; enabled by default for images.
+# developer.mozilla.org/en/CORS_Enabled_Image
+# blog.chromium.org/2011/07/using-cross-domain-images-in-webgl-and.html
+# hacks.mozilla.org/2011/11/using-cors-to-load-webgl-textures-from-cross-domain-images/
+# wiki.mozilla.org/Security/Reviews/crossoriginAttribute
+
+<IfModule mod_setenvif.c>
+  <IfModule mod_headers.c>
+    # mod_headers, y u no match by Content-Type?!
+    <FilesMatch "\.(gif|png|jpe?g|svg|svgz|ico|webp)$">
+      SetEnvIf Origin ":" IS_CORS
+      Header set Access-Control-Allow-Origin "*" env=IS_CORS
+    </FilesMatch>
+  </IfModule>
+</IfModule>
+
+
+# ----------------------------------------------------------------------
+# Webfont access
+# ----------------------------------------------------------------------
+
+# Allow access from all domains for webfonts.
+# Alternatively you could only whitelist your
+# subdomains like "subdomain.example.com".
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(ttf|ttc|otf|eot|woff|font.css)$">
+    Header set Access-Control-Allow-Origin "*"
+  </FilesMatch>
+</IfModule>
+
+
+# ----------------------------------------------------------------------
+# Proper MIME type for all files
+# ----------------------------------------------------------------------
+
+# JavaScript
+#   Normalize to standard type (it's sniffed in IE anyways)
+#   tools.ietf.org/html/rfc4329#section-7.2
+AddType application/javascript         js jsonp
+AddType application/json               json
+
+# Audio
+AddType audio/ogg                      oga ogg
+AddType audio/mp4                      m4a f4a f4b
+
+# Video
+AddType video/ogg                      ogv
+AddType video/mp4                      mp4 m4v f4v f4p
+AddType video/webm                     webm
+AddType video/x-flv                    flv
+
+# SVG
+#   Required for svg webfonts on iPad
+#   twitter.com/FontSquirrel/status/14855840545
+AddType     image/svg+xml              svg svgz
+AddEncoding gzip                       svgz
+
+# Webfonts
+AddType application/vnd.ms-fontobject  eot
+AddType application/x-font-ttf         ttf ttc
+AddType font/opentype                  otf
+AddType application/x-font-woff        woff
+
+# Assorted types
+AddType image/x-icon                        ico
+AddType image/webp                          webp
+AddType text/cache-manifest                 appcache manifest
+AddType text/x-component                    htc
+AddType application/xml                     rss atom xml rdf
+AddType application/x-chrome-extension      crx
+AddType application/x-opera-extension       oex
+AddType application/x-xpinstall             xpi
+AddType application/octet-stream            safariextz
+AddType application/x-web-app-manifest+json webapp
+AddType text/x-vcard                        vcf
+AddType application/x-shockwave-flash       swf
+AddType text/vtt                            vtt
+
+
+# ----------------------------------------------------------------------
+# Allow concatenation from within specific js and css files
+# ----------------------------------------------------------------------
+
+# e.g. Inside of script.combined.js you could have
+#   <!--#include file="libs/jquery-1.5.0.min.js" -->
+#   <!--#include file="plugins/jquery.idletimer.js" -->
+# and they would be included into this single file.
+
+# This is not in use in the boilerplate as it stands. You may
+# choose to use this technique if you do not have a build process.
+
+#<FilesMatch "\.combined\.js$">
+#  Options +Includes
+#  AddOutputFilterByType INCLUDES application/javascript application/json
+#  SetOutputFilter INCLUDES
+#</FilesMatch>
+
+#<FilesMatch "\.combined\.css$">
+#  Options +Includes
+#  AddOutputFilterByType INCLUDES text/css
+#  SetOutputFilter INCLUDES
+#</FilesMatch>
+
+
+# ----------------------------------------------------------------------
+# Gzip compression
+# ----------------------------------------------------------------------
+
+<IfModule mod_deflate.c>
+
+  # Force deflate for mangled headers developer.yahoo.com/blogs/ydn/posts/2010/12/pushing-beyond-gzipping/
+  <IfModule mod_setenvif.c>
+    <IfModule mod_headers.c>
+      SetEnvIfNoCase ^(Accept-EncodXng|X-cept-Encoding|X{15}|~{15}|-{15})$ ^((gzip|deflate)\s*,?\s*)+|[X~-]{4,13}$ HAVE_Accept-Encoding
+      RequestHeader append Accept-Encoding "gzip,deflate" env=HAVE_Accept-Encoding
+    </IfModule>
+  </IfModule>
+
+  # Compress all output labeled with one of the following MIME-types
+  <IfModule mod_filter.c>
+    AddOutputFilterByType DEFLATE application/atom+xml \
+                                  application/javascript \
+                                  application/json \
+                                  application/rss+xml \
+                                  application/vnd.ms-fontobject \
+                                  application/x-font-ttf \
+                                  application/xhtml+xml \
+                                  application/xml \
+                                  font/opentype \
+                                  image/svg+xml \
+                                  image/x-icon \
+                                  text/css \
+                                  text/html \
+                                  text/plain \
+                                  text/x-component \
+                                  text/xml
+  </IfModule>
+
+</IfModule>
+
+
+# ----------------------------------------------------------------------
+# Expires headers (for better cache control)
+# ----------------------------------------------------------------------
+
+# These are pretty far-future expires headers.
+# They assume you control versioning with filename-based cache busting
+# Additionally, consider that outdated proxies may miscache
+#   www.stevesouders.com/blog/2008/08/23/revving-filenames-dont-use-querystring/
+
+# If you don't use filenames to version, lower the CSS and JS to something like
+# "access plus 1 week".
+
+<IfModule mod_expires.c>
+  ExpiresActive on
+
+# Perhaps better to whitelist expires rules? Perhaps.
+  ExpiresDefault                          "access plus 1 month"
+
+# cache.appcache needs re-requests in FF 3.6 (thanks Remy ~Introducing HTML5)
+  ExpiresByType text/cache-manifest       "access plus 0 seconds"
+
+# Your document html
+  ExpiresByType text/html                 "access plus 0 seconds"
+
+# Data
+  ExpiresByType text/xml                  "access plus 0 seconds"
+  ExpiresByType application/xml           "access plus 0 seconds"
+  ExpiresByType application/json          "access plus 0 seconds"
+
+# Feed
+  ExpiresByType application/rss+xml       "access plus 1 hour"
+  ExpiresByType application/atom+xml      "access plus 1 hour"
+
+# Favicon (cannot be renamed)
+  ExpiresByType image/x-icon              "access plus 1 week"
+
+# Media: images, video, audio
+  ExpiresByType image/gif                 "access plus 1 month"
+  ExpiresByType image/png                 "access plus 1 month"
+  ExpiresByType image/jpeg                "access plus 1 month"
+  ExpiresByType video/ogg                 "access plus 1 month"
+  ExpiresByType audio/ogg                 "access plus 1 month"
+  ExpiresByType video/mp4                 "access plus 1 month"
+  ExpiresByType video/webm                "access plus 1 month"
+
+# HTC files  (css3pie)
+  ExpiresByType text/x-component          "access plus 1 month"
+
+# Webfonts
+  ExpiresByType application/x-font-ttf    "access plus 1 month"
+  ExpiresByType font/opentype             "access plus 1 month"
+  ExpiresByType application/x-font-woff   "access plus 1 month"
+  ExpiresByType image/svg+xml             "access plus 1 month"
+  ExpiresByType application/vnd.ms-fontobject "access plus 1 month"
+
+# CSS and JavaScript
+  ExpiresByType text/css                  "access plus 1 year"
+  ExpiresByType application/javascript    "access plus 1 year"
+
+</IfModule>
+
+
+# ----------------------------------------------------------------------
+# Prevent mobile network providers from modifying your site
+# ----------------------------------------------------------------------
+
+# The following header prevents modification of your code over 3G on some
+# European providers.
+# This is the official 'bypass' suggested by O2 in the UK.
+
+# <IfModule mod_headers.c>
+# Header set Cache-Control "no-transform"
+# </IfModule>
+
+
+# ----------------------------------------------------------------------
+# ETag removal
+# ----------------------------------------------------------------------
+
+# FileETag None is not enough for every server.
+<IfModule mod_headers.c>
+  Header unset ETag
+</IfModule>
+
+# Since we're sending far-future expires, we don't need ETags for
+# static content.
+#   developer.yahoo.com/performance/rules.html#etags
+FileETag None
+
+
+# ----------------------------------------------------------------------
+# Stop screen flicker in IE on CSS rollovers
+# ----------------------------------------------------------------------
+
+# The following directives stop screen flicker in IE on CSS rollovers - in
+# combination with the "ExpiresByType" rules for images (see above).
+
+# BrowserMatch "MSIE" brokenvary=1
+# BrowserMatch "Mozilla/4.[0-9]{2}" brokenvary=1
+# BrowserMatch "Opera" !brokenvary
+# SetEnvIf brokenvary 1 force-no-vary
+
+
+# ----------------------------------------------------------------------
+# Set Keep-Alive Header
+# ----------------------------------------------------------------------
+
+# Keep-Alive allows the server to send multiple requests through one
+# TCP-connection. Be aware of possible disadvantages of this setting. Turn on
+# if you serve a lot of static content.
+
+# <IfModule mod_headers.c>
+#   Header set Connection Keep-Alive
+# </IfModule>
+
+
+# ----------------------------------------------------------------------
+# Cookie setting from iframes
+# ----------------------------------------------------------------------
+
+# Allow cookies to be set from iframes (for IE only)
+# If needed, specify a path or regex in the Location directive.
+
+# <IfModule mod_headers.c>
+#   Header set P3P "policyref=\"/w3c/p3p.xml\", CP=\"IDC DSP COR ADM DEVi TAIi PSA PSD IVAi IVDi CONi HIS OUR IND CNT\""
+# </IfModule>
+
+
+# ----------------------------------------------------------------------
+# Start rewrite engine
+# ----------------------------------------------------------------------
+
+# Turning on the rewrite engine is necessary for the following rules and
+# features. FollowSymLinks must be enabled for this to work.
+
+# Some cloud hosting services require RewriteBase to be set: goo.gl/HOcPN
+# If using the h5bp in a subdirectory, use `RewriteBase /foo` instead where
+# 'foo' is your directory.
+
+# If your web host doesn't allow the FollowSymlinks option, you may need to
+# comment it out and use `Options +SymLinksOfOwnerMatch`, but be aware of the
+# performance impact: http://goo.gl/Mluzd
+
+<IfModule mod_rewrite.c>
+  Options +FollowSymlinks
+# Options +SymLinksIfOwnerMatch
+  RewriteEngine On
+# RewriteBase /
+</IfModule>
+
+
+# ----------------------------------------------------------------------
+# Suppress or force the "www." at the beginning of URLs
+# ----------------------------------------------------------------------
+
+# The same content should never be available under two different URLs -
+# especially not with and without "www." at the beginning, since this can cause
+# SEO problems (duplicate content). That's why you should choose one of the
+# alternatives and redirect the other one.
+
+# By default option 1 (no "www.") is activated.
+# no-www.org/faq.php?q=class_b
+
+# If you'd prefer to use option 2, just comment out all option 1 lines
+# and uncomment option 2.
+
+# IMPORTANT: NEVER USE BOTH RULES AT THE SAME TIME!
+
+# ----------------------------------------------------------------------
+
+# Option 1:
+# Rewrite "www.example.com -> example.com".
+
+<IfModule mod_rewrite.c>
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^ http://%1%{REQUEST_URI} [R=301,L]
+</IfModule>
+
+# ----------------------------------------------------------------------
+
+# Option 2:
+# Rewrite "example.com -> www.example.com".
+# Be aware that the following rule might not be a good idea if you use "real"
+# subdomains for certain parts of your website.
+
+# <IfModule mod_rewrite.c>
+#   RewriteCond %{HTTPS} !=on
+#   RewriteCond %{HTTP_HOST} !^www\..+$ [NC]
+#   RewriteRule ^ http://www.%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+# </IfModule>
+
+
+# ----------------------------------------------------------------------
+# Built-in filename-based cache busting
+# ----------------------------------------------------------------------
+
+# If you're not using the build script to manage your filename version revving,
+# you might want to consider enabling this, which will route requests for
+# /css/style.20110203.css to /css/style.css
+
+# To understand why this is important and a better idea than all.css?v1231,
+# read: github.com/h5bp/html5-boilerplate/wiki/cachebusting
+
+# <IfModule mod_rewrite.c>
+#   RewriteCond %{REQUEST_FILENAME} !-f
+#   RewriteCond %{REQUEST_FILENAME} !-d
+#   RewriteRule ^(.+)\.(\d+)\.(js|css|png|jpg|gif)$ $1.$3 [L]
+# </IfModule>
+
+
+# ----------------------------------------------------------------------
+# Prevent SSL cert warnings
+# ----------------------------------------------------------------------
+
+# Rewrite secure requests properly to prevent SSL cert warnings, e.g. prevent
+# https://www.example.com when your cert only allows https://secure.example.com
+
+# <IfModule mod_rewrite.c>
+#   RewriteCond %{SERVER_PORT} !^443
+#   RewriteRule ^ https://example-domain-please-change-me.com%{REQUEST_URI} [R=301,L]
+# </IfModule>
+
+
+# ----------------------------------------------------------------------
+# Prevent 404 errors for non-existing redirected folders
+# ----------------------------------------------------------------------
+
+# without -MultiViews, Apache will give a 404 for a rewrite if a folder of the
+# same name does not exist.
+# webmasterworld.com/apache/3808792.htm
+
+Options -MultiViews
+
+
+# ----------------------------------------------------------------------
+# Custom 404 page
+# ----------------------------------------------------------------------
+
+# You can add custom pages to handle 500 or 403 pretty easily, if you like.
+# If you are hosting your site in subdirectory, adjust this accordingly
+#    e.g. ErrorDocument 404 /subdir/404.html
+ErrorDocument 404 /404.html
+
+
+# ----------------------------------------------------------------------
+# UTF-8 encoding
+# ----------------------------------------------------------------------
+
+# Use UTF-8 encoding for anything served text/plain or text/html
+AddDefaultCharset utf-8
+
+# Force UTF-8 for a number of file formats
+AddCharset utf-8 .atom .css .js .json .rss .vtt .xml
+
+
+# ----------------------------------------------------------------------
+# A little more security
+# ----------------------------------------------------------------------
+
+# To avoid displaying the exact version number of Apache being used, add the
+# following to httpd.conf (it will not work in .htaccess):
+# ServerTokens Prod
+
+# "-Indexes" will have Apache block users from browsing folders without a
+# default document Usually you should leave this activated, because you
+# shouldn't allow everybody to surf through every folder on your server (which
+# includes rather private places like CMS system folders).
+<IfModule mod_autoindex.c>
+  Options -Indexes
+</IfModule>
+
+# Block access to "hidden" directories or files whose names begin with a
+# period. This includes directories used by version control systems such as
+# Subversion or Git.
+<IfModule mod_rewrite.c>
+  RewriteCond %{SCRIPT_FILENAME} -d [OR]
+  RewriteCond %{SCRIPT_FILENAME} -f
+  RewriteRule "(^|/)\." - [F]
+</IfModule>
+
+# Block access to backup and source files. These files may be left by some
+# text/html editors and pose a great security danger, when anyone can access
+# them.
+<FilesMatch "(\.(bak|config|sql|fla|psd|ini|log|sh|inc|swp|dist)|~)$">
+  Order allow,deny
+  Deny from all
+  Satisfy All
+</FilesMatch>
+
+# If your server is not already configured as such, the following directive
+# should be uncommented in order to set PHP's register_globals option to OFF.
+# This closes a major security hole that is abused by most XSS (cross-site
+# scripting) attacks. For more information: http://php.net/register_globals
+#
+# IF REGISTER_GLOBALS DIRECTIVE CAUSES 500 INTERNAL SERVER ERRORS:
+#
+# Your server does not allow PHP directives to be set via .htaccess. In that
+# case you must make this change in your php.ini file instead. If you are
+# using a commercial web host, contact the administrators for assistance in
+# doing this. Not all servers allow local php.ini files, and they should
+# include all PHP configurations (not just this one), or you will effectively
+# reset everything to PHP defaults. Consult www.php.net for more detailed
+# information about setting PHP directives.
+
+# php_flag register_globals Off
+
+# Rename session cookie to something else, than PHPSESSID
+# php_value session.name sid
+
+# Disable magic quotes (This feature has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 5.4.0.)
+# php_flag magic_quotes_gpc Off
+
+# Do not show you are using PHP
+# Note: Move this line to php.ini since it won't work in .htaccess
+# php_flag expose_php Off
+
+# Level of log detail - log all errors
+# php_value error_reporting -1
+
+# Write errors to log file
+# php_flag log_errors On
+
+# Do not display errors in browser (production - Off, development - On)
+# php_flag display_errors Off
+
+# Do not display startup errors (production - Off, development - On)
+# php_flag display_startup_errors Off
+
+# Format errors in plain text
+# Note: Leave this setting 'On' for xdebug's var_dump() output
+# php_flag html_errors Off
+
+# Show multiple occurrence of error
+# php_flag ignore_repeated_errors Off
+
+# Show same errors from different sources
+# php_flag ignore_repeated_source Off
+
+# Size limit for error messages
+# php_value log_errors_max_len 1024
+
+# Don't precede error with string (doesn't accept empty string, use whitespace if you need)
+# php_value error_prepend_string " "
+
+# Don't prepend to error (doesn't accept empty string, use whitespace if you need)
+# php_value error_append_string " "
+
+# Increase cookie security
+<IfModule php5_module>
+  php_value session.cookie_httponly true
+</IfModule>
+
+
+
+RewriteEngine On
+RewriteCond %{QUERY_STRING} (.*)(http|https|ftp)://(.*)
+RewriteRule ^(.+)$ - [F,L]
+
+DirectoryIndex intro.php
+
+
+RewriteRule ^home                                index.php?act=pages_/home/index
+
+RewriteRule ^wanderlust                          shop_url.php?param=wanderlust
+RewriteRule ^wanderboy                           shop_url.php?param=wanderboy
+RewriteRule ^wanderer                            shop_url.php?param=wanderer
+RewriteRule ^wandering                           shop_url.php?param=wandering
+
+# --- SHOP --- #
+RewriteRule ^shop$                               index.php?act=shop_/index
+
+RewriteRule ^shop/([0-9]+)$                               index.php?act=shop_/index&shop_cat_id=$1&shop_root=1
+
+RewriteRule ^sale$                               index.php?act=shop_/index&sale=1&shop_root=1
+
+RewriteRule ^sale/([0-9]+)$                               index.php?act=shop_/index&shop_cat_id=$1&shop_root=1&sale=1
+
+RewriteRule ^shop/wanderlust                               index.php?act=shop_/index&shop_cat_id=22&shop_root=1
+RewriteRule ^shop/wanderboy                               index.php?act=shop_/index&shop_cat_id=15&shop_root=1
+RewriteRule ^shop/wanderer                               index.php?act=shop_/index&shop_cat_id=29&shop_root=1
+RewriteRule ^shop/wandering                               index.php?act=shop_/index&shop_cat_id=30&shop_root=1
+
+#// CATEGORY
+RewriteRule ^shop-view/(.*)/(.*)/(.*)/(.*)/(.*)$      index.php?act=shop_/index&shop_cat_id=$1&shop_filter=$2&shop_sort=$3&shop_page=$4&shop_view=$5 [B]
+RewriteRule ^sale-view/(.*)/(.*)/(.*)/(.*)/(.*)$      index.php?act=shop_/index&shop_cat_id=$1&shop_filter=$2&shop_sort=$3&shop_page=$4&shop_view=$5&sale=1 [B]
+#// FILTER
+#RewriteRule ^shop-by-(.*)/(.*)$                 index.php?act=shop_/index&shop_param=$1&filter=$2 [B]
+
+#// SORT
+#RewriteRule ^shop-by-(.*)/(.*)$                 index.php?act=shop_/index&shop_param=$1&sort=$2 [B]
+
+
+#RewriteRule ^item$                              index.php?act=shop_/details
+
+# PATTERN : item/[category name]/[product name]/[type name]
+RewriteRule ^item/(.*)/(.*)/(.*)$                index.php?act=shop_/details&prod_cat=$1&prod_name=$2&prod_type=$3
+
+# RewriteRule ^shop-view/(.*)-(.*)/(.*)$         index.php?act=(shop)/index&shop_cat=$1&shop_sort=$2&shop_record=$3
+# RewriteRule ^item/(.*)-type-(.*)$              index.php?act=(shop)/details&shop_detail_alias=$1&shop_detail_tname=$2
+# RewriteRule ^shop-search/name-(.*)$            index.php?act=(shop)/index&src_name=$1
+# RewriteRule ^add-to-bag$                       index.php?act=(shop)/add_to_bag
+
+# --- BLOG --- #
+RewriteRule ^blog$                               index.php?act=blog_/index
+RewriteRule ^blog-view/(.*)/(.*)$                index.php?act=blog_/index&cat_news=$1&cat_record=$2
+RewriteRule ^read$                               index.php?act=blog_/details
+# RewriteRule ^blog-cat/(.*)/(.*)$               index.php?act=blog_/index&category=$1&record=$2
+# RewriteRule ^blog-arc/(.*)/(.*)$               index.php?act=blog_/index&date=$1&record=$2
+# RewriteRule ^blog-view/(.*)/(.*)/(.*)$         index.php?act=blog_/index&category=$1&date=$2&record=$3
+# RewriteRule ^read/(.*)$                        index.php?act=blog/details&nt=$1
+
+RewriteRule ^ajax-add$                           index.php?act=shop_/ajax_add_bag
+
+# --- ORDER --- #
+RewriteRule ^bag$                                index.php?act=order_/bag
+RewriteRule ^order-login$                        index.php?act=order_/order-login
+RewriteRule ^checkout$                           index.php?act=order_/checkout
+RewriteRule ^finish$                             index.php?act=order_/finish
+RewriteRule ^wishlist$                           index.php?act=order_/wishlist
+
+# --- ACCOUNT --- #
+RewriteRule ^account/(.*)$                       index.php?act=account_/index&aid=$1
+RewriteRule ^confirm$                            index.php?act=confirm_/index
+RewriteRule ^order-history$                      index.php?act=account_/order
+RewriteRule ^order-detail/(.*)$				     index.php?act=account_/orderdetails&oid=$1
+RewriteRule ^shipping-details$                   index.php?act=account_/shippingdetails
+RewriteRule ^account-details$                    index.php?act=account_/accountdetails
+
+RewriteRule ^login$                              index.php?act=account_/login
+RewriteRule ^logout$                             logout.php
+
+
+#RewriteRule ^account$                           index.php?act=account_/index
+#Rewriterule ^order-detail$					     index.php?act=account_/orderdetails
+
+# --- PAGES --- #
+RewriteRule ^gallery$                            index.php?act=gallery_/index
+RewriteRule ^about$                              index.php?act=pages_/about/index
+RewriteRule ^career$                              index.php?act=pages_/career/index
+RewriteRule ^partners$                              index.php?act=pages_/partners/index
+RewriteRule ^contact$                            index.php?act=pages_/contact/index
+RewriteRule ^terms-conditions$                   index.php?act=pages_/terms/index
+RewriteRule ^privacy-policy$                     index.php?act=pages_/privacy/index
+RewriteRule ^help$                               index.php?act=pages_/help/index
+
+
+
+###################
+#                 #
+#      ADMIN      #
+#                 #
+###################
+
+RewriteRule ^admin/$                     admin/index.php?act=products/index
+RewriteRule ^admin/bless$               admin/index.php?act=dashboard/index
+RewriteRule ^admin/accounts$            admin/index.php?act=settings/account/account
+RewriteRule ^admin/general$             admin/index.php?act=settings/general
+RewriteRule ^admin/notifications$       admin/index.php?act=settings/notifications/index
+RewriteRule ^admin/payment$             admin/index.php?act=settings/payment/index
+
+# HOME
+RewriteRule ^admin/home$                admin/index.php?act=pages/home/home
+
+# ABOUT
+RewriteRule ^admin/about$               admin/index.php?act=pages/about/about
+
+# CONTACT
+RewriteRule ^admin/contact$             admin/index.php?act=pages/contact/contact
+
+
+
+# ----------------------------------------------------------------------
+# ORDER
+# ----------------------------------------------------------------------
+RewriteRule ^admin/order$                  									    admin/index.php?act=orders/index
+RewriteRule ^admin/order-view/(.*)/(.*)/(.*)/(.*)-(.*)$                         admin/index.php?act=orders/index&pg=$1&qpp=$2&srt=$3&src=$4&srcval=$5
+RewriteRule ^admin/order-detail/(.*)$   										admin/index.php?act=orders/details/edit&oid=$1
+RewriteRule ^admin/order-detailing/(.*)$   										admin/index.php?act=orders/details/index&oid=$1
+
+RewriteRule ^admin/order-open$                  							    admin/index.php?act=orders/open/index
+RewriteRule ^admin/order-open-view/(.*)/(.*)/(.*)/(.*)-(.*)$                    admin/index.php?act=orders/open/index&pg=$1&qpp=$2&srt=$3&src=$4&srcval=$5
+
+RewriteRule ^admin/order-expired$                  							    admin/index.php?act=orders/expired_/index
+RewriteRule ^admin/order-expired-view/(.*)/(.*)/(.*)/(.*)-(.*)$                 admin/index.php?act=orders/expired_/index&pg=$1&qpp=$2&srt=$3&src=$4&srcval=$5
+
+RewriteRule ^admin/order-cancelled$                  							admin/index.php?act=orders/cancel/index
+RewriteRule ^admin/order-cancelled-view/(.*)/(.*)/(.*)/(.*)-(.*)$               admin/index.php?act=orders/cancel/index&pg=$1&qpp=$2&srt=$3&src=$4&srcval=$5
+
+
+# ----------------------------------------------------------------------
+# PRODUCT
+# ----------------------------------------------------------------------
+RewriteRule ^admin/product$                     								admin/index.php?act=products/index
+RewriteRule ^admin/product-details-(.*)$        								admin/index.php?act=products/details/edit&product_alias=$1
+RewriteRule ^admin/add-product$                 								admin/index.php?act=products/add/index
+RewriteRule ^admin/product-view/(.*)/(.*)/(.*)/(.*)/(.*)-(.*)$        			admin/index.php?act=products/index&pg=$1&cat=$2&qpp=$3&srt=$4&src=$5&srcval=$6 [B]
+RewriteRule ^admin/products/add/index.php       								admin/add-product
+
+
+# ----------------------------------------------------------------------
+# CATEGORY
+# ----------------------------------------------------------------------
+RewriteRule ^admin/category$                    								admin/index.php?act=products/category/index
+RewriteRule ^admin/detail-category/(.*)/(.*)$        						    admin/index.php?act=products/category/detail&cid=$1&cname=$2
+RewriteRule ^admin/category-view/(.*)/(.*)/(.*)/(.*)-(.*)$                      admin/index.php?act=products/category/index&pg=$1&qpp=$2&srt=$3&src=$4&srcval=$5
+
+RewriteRule ^admin/child-category/(.*)/(.*)$        						    admin/index.php?act=products/category/child/index&cid=$1&cname=$2
+RewriteRule ^admin/child-category-view/(.*)/(.*)/(.*)/(.*)/(.*)/(.*)-(.*)$      admin/index.php?act=products/category/child/index&cid=$1&cname=$2&pg=$3&qpp=$4&srt=$5&src=$6&srcval=$7
+
+RewriteRule ^admin/stock-manager$                    							admin/index.php?act=products/stock/sizemanager
+RewriteRule ^admin/stock-grouped$                                               admin/index.php?act=products/stock/grouped
+RewriteRule ^admin/stock-grouped-view/(.*)/(.*)/(.*)/(.*)-(.*)$                 admin/index.php?act=products/stock/grouped&pg=$1&qpp=$2&srt=$3&src=$4&srcval=$5
+RewriteRule ^admin/stock-view/(.*)/(.*)/(.*)/(.*)/(.*)-(.*)$                    admin/index.php?act=products/stock/sizemanager&pg=$1&cat=$2&qpp=$3&srt=$4&src=$5&srcval=$6 [B]
+
+
+RewriteRule ^admin/color$                       								admin/index.php?act=products/color/index
+RewriteRule ^admin/color-detail/(.*)/(.*)$                       			    admin/index.php?act=products/color/edit&color_id=$1&color_name=$2
+RewriteRule ^admin/color-view/(.*)/(.*)/(.*)/(.*)-(.*)$       		            admin/index.php?act=products/color/index&pg=$1&qpp=$2&srt=$3&src=$4&srcval=$5
+
+RewriteRule ^admin/size$                                               			admin/index.php?act=products/size/index
+RewriteRule ^admin/size-detail/(.*)/(.*)$                                       admin/index.php?act=products/size/edit&size_id=$1&size_name=$2
+RewriteRule ^admin/size-view/(.*)/(.*)/(.*)/(.*)-(.*)$        			        admin/index.php?act=products/size/index&pg=$1&qpp=$2&srt=$3&src=$4&srcval=$5
+
+
+RewriteRule ^admin/customer$            										admin/index.php?act=customers/index
+RewriteRule ^admin/add-customer$        										admin/index.php?act=customers/add/index
+RewriteRule ^admin/customer/(.*)$       										admin/index.php?act=customers/details/index&cid=$1
+RewriteRule ^admin/edit-customer/(.*)$  										admin/index.php?act=customers/details/edit&cid=$1
+RewriteRule ^admin/customer-view/(.*)/(.*)/(.*)/(.*)-(.*)$                      admin/index.php?act=customers/index&pg=$1&qpp=$2&srt=$3&src=$4&srcval=$5
+
+RewriteRule ^admin/customer-details/(.*)/(.*)/(.*)/(.*)/(.*)-(.*)$              admin/index.php?act=customers/details/index&cid=$1&pg=$2&qpp=$3&srt=$4&src=$5&srcval=$6
+
+RewriteRule ^admin/shipping$            										admin/index.php?act=settings/shipping/index
+RewriteRule ^admin/shipping-view/(.*)/(.*)/(.*)/(.*)-(.*)$$            			admin/index.php?act=settings/shipping/index&pg=$1&qpp=$2&srt=$3&src=$4&srcval=$5
+
+RewriteRule ^admin/add-shipping$            									admin/index.php?act=settings/shipping/add/index
+RewriteRule ^admin/shipping/(.*)$            									admin/index.php?act=settings/shipping/detail/index&sid=$1
+RewriteRule ^admin/edit-shipping/(.*)$            								admin/index.php?act=settings/shipping/detail/edit&sid=$1
+
+RewriteRule ^admin/logout$                                                      admin/logout.php
+
+# ADDITION
+
+RewriteRule ^admin/add-category$                                                admin/index.php?act=products/category/add
+RewriteRule ^admin/edit-category$                                               admin/index.php?act=products/category/edit
+
+RewriteRule ^admin/add-color$                                                   admin/index.php?act=products/color/add
+RewriteRule ^admin/edit-color$                                                  admin/index.php?act=products/color/edit
+
+RewriteRule ^admin/add-size$                                                    admin/index.php?act=products/size/add
+RewriteRule ^admin/edit-size$                                                   admin/index.php?act=products/size/edit
+
+RewriteRule ^admin/forgot-password$                                             admin/index.php?act=account/forgot
+RewriteRule ^admin/recover-password/(.*)/(.*)/(.*)$                             admin/index.php?act=account/recover&name=$1&code=$2&time=$3 [B]
+
+RewriteRule ^admin/reset-password$                                              admin/emails/resetpassword.html
+
+
+###################
+#                 #
+#     CUSTOMS     #
+#                 #
+#################### 
+
+#NEW ARRIVAL
+RewriteRule ^admin/new-arrivals$            					                admin/index.php?act=custom/new_arrival/index
+RewriteRule ^admin/new-arrivals-view/(.*)/(.*)/(.*)/(.*)/(.*)-(.*)$            	admin/index.php?act=custom/new_arrival/index&pg=$1&cat=$2&qpp=$3&srt=$4&src=$5&srcval=$6 [B]
+
+
+# INSPIRATION
+RewriteRule ^admin/inspiration$             									admin/index.php?act=custom/inspiration/index
+RewriteRule ^admin/view-inspiration/(.*)/(.*)/(.*)/(.*)-(.*)$             		admin/index.php?act=custom/inspiration/index&pg=$1&qpp=$2&srt=$3&src=$4&srcval=$5 [B]
+
+RewriteRule ^admin/add-inspiration$             						        admin/index.php?act=custom/inspiration/add/index
+RewriteRule ^admin/inspiration-detail/(.*)$             						admin/index.php?act=custom/inspiration/detail/index&ins_id=$1
+
+
+# NEWS
+RewriteRule ^admin/news-category$                                               admin/index.php?act=custom/news/category/index
+RewriteRule ^admin/news-category-view/(.*)/(.*)/(.*)/(.*)-(.*)$                 admin/index.php?act=custom/news/category/index&pg=$1&qpp=$2&srt=$3&src=$4&srcval=$5
+
+RewriteRule ^admin/news$                                                        admin/index.php?act=custom/news/index
+RewriteRule ^admin/news-detail/(.*)/(.*)$                                       admin/index.php?act=custom/news/details/index&nid=$1&nn=$2
+RewriteRule ^admin/news-edit/(.*)/(.*)$                                         admin/index.php?act=custom/news/details/edit&nid=$1&nn=$2
+RewriteRule ^admin/add-news$                                                    admin/index.php?act=custom/news/add/index
+RewriteRule ^admin/news-view/(.*)/(.*)/(.*)/(.*)/(.*)-(.*)$                     admin/index.php?act=custom/news/index&pg=$1&cat=$2&qpp=$3&srt=$4&src=$5&srcval=$6
+
+
+# PROMOTIONS
+RewriteRule ^admin/sale$                    							        admin/index.php?act=custom/promotions/sale/index
+RewriteRule ^admin/sale-view/(.*)/(.*)/(.*)/(.*)/(.*)-(.*)$                     admin/index.php?act=custom/promotions/sale/index&pg=$1&cat=$2&qpp=$3&srt=$4&src=$5&srcval=$6 [B]
+
+
+
+# FRONT END
+
+RewriteRule ^news-category/(.*)$                                                index.php?act=(news)/index&cid=$1
+RewriteRule ^details-news/(.*)/(.*)$    									    index.php?act=(news)/details&nid=$1&nan=$2
+
+
+# DUAL LANGUAGE
+RewriteRule ^indonesia$                 lang_id.php
+RewriteRule ^english$                   lang_en.php
+
+#ABOUT
+RewriteRule ^admin/(.*)-about$            								        admin/index.php?act=custom/language/pages/about/about&lang=$1
+
+# PRODUCTS
+RewriteRule ^admin/(.*)-product-details-(.*)$        							admin/index.php?act=custom/language/products/edit&lang=$1&product_alias=$2
+
+#NEWS
+RewriteRule ^admin/(.*)-news-detail/(.*)/(.*)$            					    admin/index.php?act=custom/language/pages/news/news&lang=$1&nid=$2&nn=$3
+RewriteRule ^admin/(.*)-news-edit/(.*)/(.*)$            					    admin/index.php?act=custom/language/pages/news/news_edit&lang=$1&nid=$2&nn=$3
+
+
+
+# COLLECTION
+RewriteRule ^admin/add-collection$                                              admin/index.php?act=custom/products/collection/add
+RewriteRule ^admin/edit-collection$                                             admin/index.php?act=custom/products/collection/edit
+RewriteRule ^admin/collection$                                                  admin/index.php?act=custom/products/collection/index
+RewriteRule ^admin/collection-detail/(.*)/(.*)$                                 admin/index.php?act=custom/products/collection/edit&collection_id=$1&collection_name=$2
+RewriteRule ^admin/collection-view/(.*)/(.*)/(.*)/(.*)-(.*)$        			admin/index.php?act=custom/products/collection/index&pg=$1&qpp=$2&srt=$3&src=$4&srcval=$5
+
+
+# REPORT
+RewriteRule ^admin/reporting$            								        admin/index.php?act=custom/reports/index
+RewriteRule ^admin/reporting/sales-by-category$            						admin/index.php?act=custom/reports/sales/items/categories/index
+RewriteRule ^admin/reporting/sales-by-category/(.*)/(.*)$            			admin/index.php?act=custom/reports/sales/items/categories/index&date_start=$1&date_end=$2
+RewriteRule ^admin/reporting/sales-by-order$            						admin/index.php?act=custom/reports/sales/items/orders/index
+RewriteRule ^admin/reporting/sales-by-order/(.*)/(.*)$            				admin/index.php?act=custom/reports/sales/items/orders/index&date_start=$1&date_end=$2
+RewriteRule ^admin/reporting/inventory$            						        admin/index.php?act=custom/reports/inventory/index
+RewriteRule ^admin/reporting/inventory/(.*)$            				        admin/index.php?act=custom/reports/inventory/index&root=$1
+RewriteRule ^admin/reporting-export/inventory$            						admin/index.php?act=custom/reports/inventory/export
+RewriteRule ^admin/reporting-export/inventory/(.*)$            				    admin/index.php?act=custom/reports/inventory/export&root=$1
+
+
+RewriteRule sitemap.xml sitemap.php [nocase] 

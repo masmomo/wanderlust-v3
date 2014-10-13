@@ -1,0 +1,13 @@
+# humanstxt.org/
+# The humans responsible & technology colophon
+
+# CREATOR
+
+    Antikode
+    Twitter: @ANTIKOD_
+    Website: www.antikode.com
+
+# TECHNOLOGY COLOPHON
+
+    HTML5, CSS3
+    jQuery, Modernizr

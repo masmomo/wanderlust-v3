@@ -1,0 +1,2 @@
+[20-Sep-2014 21:37:53 Asia/Jakarta] PHP Warning:  mysql_fetch_array() expects parameter 1 to be resource, boolean given in /home/u2402752/public_html/admin/static/general.php on line 282
+[20-Sep-2014 21:37:53 Asia/Jakarta] PHP Warning:  mysql_fetch_array() expects parameter 1 to be resource, boolean given in /home/u2402752/public_html/admin/static/general.php on line 306
