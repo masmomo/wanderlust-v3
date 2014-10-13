@@ -132,6 +132,7 @@ if(empty($act)){
             <li><a href="<?php echo $prefix_url;?>sale">Sale</a></li>
           </ul>
         </li>
+        
         <li class="hidden"><a href="<?php echo $prefix_url;?>reporting">Reports</a></li>
         
         <li class="hidden"><a data-toggle="dropdown" href="#">Projects</a>
@@ -168,7 +169,6 @@ if(empty($act)){
         </li>
         
       </ul>
-      
       
 
       <ul class="nav navbar-nav navbar-right" role="navigation">
