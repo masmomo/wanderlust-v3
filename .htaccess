@@ -799,6 +799,26 @@ RewriteRule ^admin/career-meta-tag$                                             
 
 
 
+# ----------------------------------------------------------------------
+# STORE
+# ----------------------------------------------------------------------
+
+RewriteRule ^admin/store-city$                                                  admin/index.php?act=custom/store/index
+RewriteRule ^admin/store-city-view/(.*)/(.*)/(.*)/(.*)-(.*)$                    admin/index.php?act=custom/store/index&pg=$1&qpp=$2&srt=$3&src=$4&srcval=$5
+
+RewriteRule ^admin/add-city$                                                    admin/index.php?act=custom/store/add/index
+RewriteRule ^admin/store-city-detail/(.*)/(.*)$                                 admin/index.php?act=custom/store/details/index&cat_id=$1&cat_name=$2
+
+RewriteRule ^admin/store$                                                       admin/index.php?act=custom/store/jobs/index
+RewriteRule ^admin/store-view/(.*)/(.*)/(.*)/(.*)/(.*)-(.*)$                    admin/index.php?act=custom/store/jobs/index&pg=$1&cat=$2&qpp=$3&srt=$4&src=$5&srcval=$6
+
+RewriteRule ^admin/add-store$                                                   admin/index.php?act=custom/store/jobs/add/index
+RewriteRule ^admin/store-detail/(.*)/(.*)$                                      admin/index.php?act=custom/store/jobs/details/index&cat_id=$1&cat_name=$2
+
+RewriteRule ^admin/store-meta-tag$                                              admin/index.php?act=custom/store/meta/index
+
+
+
 # FRONT END
 
 RewriteRule ^news-category/(.*)$                                                index.php?act=(news)/index&cid=$1
