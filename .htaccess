@@ -779,6 +779,24 @@ RewriteRule ^admin/news-view/(.*)/(.*)/(.*)/(.*)/(.*)-(.*)$                     
 RewriteRule ^admin/sale$                    							        admin/index.php?act=custom/promotions/sale/index
 RewriteRule ^admin/sale-view/(.*)/(.*)/(.*)/(.*)/(.*)-(.*)$                     admin/index.php?act=custom/promotions/sale/index&pg=$1&cat=$2&qpp=$3&srt=$4&src=$5&srcval=$6 [B]
 
+# ----------------------------------------------------------------------
+# CAREER
+# ----------------------------------------------------------------------
+
+RewriteRule ^admin/career-department$                                           admin/index.php?act=custom/careers/index
+RewriteRule ^admin/career-department-view/(.*)/(.*)/(.*)/(.*)-(.*)$             admin/index.php?act=custom/careers/index&pg=$1&qpp=$2&srt=$3&src=$4&srcval=$5
+
+RewriteRule ^admin/add-department$                                              admin/index.php?act=custom/careers/add/index
+RewriteRule ^admin/career-department-detail/(.*)/(.*)$                          admin/index.php?act=custom/careers/details/index&cat_id=$1&cat_name=$2
+
+RewriteRule ^admin/career$                                                      admin/index.php?act=custom/careers/jobs/index
+RewriteRule ^admin/career-view/(.*)/(.*)/(.*)/(.*)/(.*)-(.*)$                   admin/index.php?act=custom/careers/jobs/index&pg=$1&cat=$2&qpp=$3&srt=$4&src=$5&srcval=$6
+
+RewriteRule ^admin/add-career$                                                  admin/index.php?act=custom/careers/jobs/add/index
+RewriteRule ^admin/career-detail/(.*)/(.*)$                                     admin/index.php?act=custom/careers/jobs/details/index&cat_id=$1&cat_name=$2
+
+RewriteRule ^admin/career-meta-tag$                                             admin/index.php?act=custom/careers/meta/index
+
 
 
 # FRONT END

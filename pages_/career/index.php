@@ -1,23 +1,58 @@
+<?php
+function count_career(){
+   $conn   = conndB();
+   $sql    = "SELECT COUNT(*) AS rows FROM tbl_career WHERE `visibility` = '1'";
+   $query  = mysql_query($sql, $conn);
+   $result = mysql_fetch_array($query);
+   
+   return $result;
+}
 
+
+function get_career(){
+   $conn   = conndB();
+   $sql    = "SELECT * FROM tbl_career WHERE `visibility` = '1'";
+   $query  = mysql_query($sql, $conn);
+   $row    = array();
+   
+   while($result = mysql_fetch_array($query)){
+      array_push($row, $result);
+   }
+   
+   return $row;
+}
+
+
+/* --- CALL FUNCTION --- */
+$count_career = count_career();
+$data_career  = get_career();
+?>
 
     <div class="container">
       <img class="img-responsive m_b_20" src="<?php echo $prefix_url;?>files/common/img_small-0.jpg" width="100%">
       <div class="content">
         <div class="row">
-          <?php 
-          for($i=0;$i<7;$i++){
+          
+		  <?php 
+		  if($count_career['rows'] > 0){
+		     
+			 foreach($data_career as $data_career){
           ?>
+
           <div class="col-xs-4">
             <a data-toggle="modal" href="#myModal">
               <div class="career-box">
-                <h3 class="h5 m_b_15">Job Title</h3>
-                <p>Lead research accross the company and help to make sure research findings are synthesized and translated into actionable objectives.</p>
+                <h3 class="h5 m_b_15"><?php echo $data_career['career_name'];?></h3>
+                <p><?php echo $data_career['description'];?></p>
               </div>
             </a>
           </div>
+          
           <?php 
+			 }
           } 
           ?>
+          
         </div>
       </div><!--.content-->
     </div><!--.container.main-->
