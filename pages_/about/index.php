@@ -12,6 +12,12 @@ function get_about($post_fill){
 $about = get_about('about');
 ?>
 
+<style>
+.img-responsive.m_b_20{
+   height:260px;
+}
+</style>
+
     <div class="container">
       <img class="img-responsive m_b_20" src="<?php echo $prefix_url;?>files/common/img_small-0.jpg" width="100%">
       <div class="content">

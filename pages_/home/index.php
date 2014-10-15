@@ -159,20 +159,45 @@ $get_banner           = get_page_banner(1);
 $get_banner_default   = get_page_banner_default(1);
 ?>
 
+
+
+
+<form id="signup" method="get">
+<div class="modal fade" id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close hidden" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+        </button>
+        <h4 class="modal-title">Newsletter</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+           <div class="col-xs-12" id="newsletter-alert">
+             
+           </div>
+             <input type="hidden" name="ajax" value="true" />
+             <label class="col-xs-3">Email</label>
+             <div class="col-xs-9">
+               <input type="text" class="form-control" id="email" name="email_chimp" placeholder="Enter your email address">
+             </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary-2 hidden" data-dismiss="modal">Close</button>
+        <!--<button type="button" class="btn btn-primary">Subscribe</button>-->
+        <button type="submit" id="loading-example-btns" data-loading-text="Loading..." class="btn btn-primary hidden">Subscribe</button>
+        <input type="submit" id="loading-example-btn" data-loading-text="Loading..." class="btn btn-primary" value="Subscribe" />
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+</form>
+
+
     <div class="container">
       <div class="content">
-        
-        <!--CAROUSEL-->
-
-		<script type="text/javascript">
-		$(document).ready(function () {
-		    $('.carousel').carousel({
-		        interval: 3000
-		    });
-
-		    $('.carousel').carousel('cycle');
-		});
-		</script>
 		
         <div id="main-carousel" class="carousel slide m_b_10">
           <ol class="carousel-indicators">
@@ -275,12 +300,14 @@ $get_banner_default   = get_page_banner_default(1);
 
         <!--FEATURED ITEMS-->
         <div class="row">
-          <?php 
-		      foreach($get_featured as $featured){
+          
+		  <?php 
+		  foreach($get_featured as $featured){
 		     
-    			// CALL FUNCTION
-    			$product_stock = count_stock_featured($featured['featured_type_id']);
-          ?>
+		     // CALL FUNCTION
+			 $product_stock = count_stock_featured($featured['featured_type_id']);
+		  ?>
+          
           <div class="thumb col-xs-3">
             <a href="<?php echo $prefix_url."item/".$featured['category_alias']."/".$featured['product_alias']."/".$featured['type_alias'];?>">
               <div class="content">
@@ -288,7 +315,7 @@ $get_banner_default   = get_page_banner_default(1);
                 
                 <?php
                 discount_label($featured['promo_item_id'], $featured['promo_start_datetime'], $featured['promo_end_datetime'], $prefix_url);
-			          ?>
+				?>
                 
                 <img class="img-responsive opac" src="<?php echo $prefix_img.$featured['img_src']."&h=405&w=270&q=100";?>" width="100%">
               </div>
@@ -296,9 +323,9 @@ $get_banner_default   = get_page_banner_default(1);
                 <p class="title"><?php echo $featured['product_name'];?></p>
                 
                 <?php
-                // DISCOUNT CONTROL
-        				$discount = discount_price($featured['promo_id'], $featured['promo_value'], $featured['type_price'], $featured['promo_start_datetime'], $featured['promo_end_datetime']);
-        				?>
+                /* --- DISCOUNT CONTROL --- */
+				$discount = discount_price($featured['promo_id'], $featured['promo_value'], $featured['type_price'], $featured['promo_start_datetime'], $featured['promo_end_datetime']);
+				?>
 
                 <p class="price">
                   <?php
@@ -313,9 +340,9 @@ $get_banner_default   = get_page_banner_default(1);
                 
                 <?php
                 if($product_stock['total_stock'] <= 0){
-				        echo "<p><span class=\"label label-default\">Sold Out</span></p>";
-        				}
-        				?>
+				   echo "<p><span class=\"label label-default\">Sold Out</span></p>";
+				}
+				?>
               
               </div>
             </a>
@@ -327,5 +354,57 @@ $get_banner_default   = get_page_banner_default(1);
 
       </div><!--.content-->
     </div><!--.container.main-->
+    
+    
+
+		<script type="text/javascript">
+		<!--- BUTTON LOADING NEWSLETTER --- >
+		/*
+		$('#loading-example-btn').click(function () {
+		   var btn = $(this);
+		   btn.button('loading');
+   
+		   //$.ajax(...).always(function () {
+		      //btn.button('reset');
+		   //});
+
+		});
+		*/
+		
+		$(window).load(function(){
+		   /* --- SLIDESHOW --- */
+		   $('.carousel').carousel({
+		      interval: 3000
+		   });
+
+		   $('.carousel').carousel('cycle');
+		   
+		   
+		   /* --- NEWSLETTER POPUP --- */
+		   $('#myModal').modal();
+		   
+		   $('#signup').submit(function() {
+		      
+			  var btn = $('#loading-example-btn');
+			  btn.button('loading');
+			  
+		      //$("#message").html("<span class='error'>Adding your email address...</span>");
+		      $.ajax({
+			     url: '<?php echo $prefix_url;?>static/subscriber/inc/store-address.php', // proper url to your "store-address.php" file
+			     data: $('#signup').serialize(),
+			     success: function(msg) {
+				    //$('#message').html(msg);
+				    //$('#p-email').slideDown("fast").hide();
+				    //$('#alert-email').val(msg).slideDown("fast");
+				    //alert(msg);
+					btn.button('reset');
+					$('#newsletter-alert').html(msg);
+				 }
+			  });
+							  
+		      return false;
+		   });
+		});
+		</script>
 
     

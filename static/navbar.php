@@ -170,15 +170,18 @@ $navbar_cats = get_category_navbar();
 
         <div class="nav navbar-nav pull-right">
         	<li
-				<?php
-					if($act=='pages_/about/index'){echo 'class="active"';}
-				?>
-		  ><a href="<?php echo $prefix_url;?>about">About</a></li>
-          <li
-				<?php
-					if($act=='pages_/contact/index'){echo 'class="active"';}
-				?>
-		   ><a href="<?php echo $prefix_url;?>contact">Contact</a></li>
+			<?php
+            //if($act=='pages_/about/index'){echo 'class="active"';}
+			//if($act=='pages_/about/index'){echo 'style="color#888;"';}
+			?>
+            >
+              <a <?php if($act=='pages_/about/index'){echo 'style="color:#888;"';}?> href="<?php echo $prefix_url;?>about">About</a></li>
+            <li
+			<?php
+            //if($act=='pages_/contact/index'){echo 'class="active"';}
+			?>
+            >
+              <a <?php if($act=='pages_/contact/index'){echo 'style="color:#888;"';}?> href="<?php echo $prefix_url;?>contact">Contact</a></li>
 		  	<!--<li id="sb-search" class="sb-search">
 		  	    <form>
 		  	        <input class="sb-search-input" placeholder="Enter your search term..." type="search" value="" name="search" id="search">
@@ -206,6 +209,10 @@ $navbar_cats = get_category_navbar();
 }
 #nav_cat_30.active a, #nav_cat_30 a:hover{
 	color:#1da654;
+}
+
+.nav.navbar-nav.pull-right li a:hover{
+   color:#888;
 }
 </style>
 <?php
