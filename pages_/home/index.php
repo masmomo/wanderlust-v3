@@ -279,16 +279,20 @@ $get_banner_default   = get_page_banner_default(1);
 		  foreach($get_banner as $key=>$banner){
 			  
 		     if($count_banner['rows'] > 0){
+				
+		        echo '<div class="col-xs-4">';
 			    
 				if($banner['link'] != ''){
 			       echo '<a href="'.$banner['link'].'">';
 				}
 				
-		        echo '<div class="col-xs-4"><img class="img-responsive m_b_10" src="'.$prefix_img.$banner['filename'].'&h=220&q=100" width="100%"></div>';
+				echo'<img class="img-responsive m_b_10" src="'.$prefix_img.$banner['filename'].'&h=220&q=100" width="100%">';
 				
 				if($banner['link'] != ''){
 			       echo '</a>';
 				}
+				
+				echo '</div>';
 				
 			 }else{
 		        echo '<div class="col-xs-4"><img class="img-responsive" src="'.$prefix_url.'files/common/img_small-'.($key+1).'.jpg" width="100%"></div>';
@@ -399,6 +403,7 @@ $get_banner_default   = get_page_banner_default(1);
 				    //alert(msg);
 					btn.button('reset');
 					$('#newsletter-alert').html(msg);
+					$('#email').val('');
 				 }
 			  });
 							  
