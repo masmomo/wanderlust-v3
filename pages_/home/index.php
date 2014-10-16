@@ -168,31 +168,25 @@ $get_banner_default   = get_page_banner_default(1);
 
 <form id="signup" method="get">
 <div class="modal fade" id="myModal">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-news">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close hidden" data-dismiss="modal">
-          <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
-        </button>
-        <h4 class="modal-title">Newsletter</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title text-center">Wanderlust Newsletter</h4>
       </div>
-      <div class="modal-body">
-        <div class="row">
-           <div class="col-xs-12" id="newsletter-alert">
-             
+      <img src="<?php echo $prefix?>files/common/img_newsletter.jpg" width="100%">
+      <div class="modal-body clearfix">
+         <input type="hidden" name="ajax" value="true" />
+         <p class="text-center m_b_20">Stay updated with our lorem ipsum dolor sit amet.</p>
+        <div class="row-n">
+           <div class="col-xs-9">
+             <input type="text" class="form-control" id="email" name="email_chimp" placeholder="Enter your email address">
            </div>
-             <input type="hidden" name="ajax" value="true" />
-             <label class="col-xs-3">Email</label>
-             <div class="col-xs-9">
-               <input type="text" class="form-control" id="email" name="email_chimp" placeholder="Enter your email address">
-             </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary-2 hidden" data-dismiss="modal">Close</button>
-        <!--<button type="button" class="btn btn-primary">Subscribe</button>-->
-        <button type="submit" id="loading-example-btns" data-loading-text="Loading..." class="btn btn-primary hidden">Subscribe</button>
-        <input type="submit" id="loading-example-btn" data-loading-text="Loading..." class="btn btn-primary" value="Subscribe" />
+           <div class="col-xs-3">
+            <button type="submit" id="loading-example-btns" data-loading-text="Loading..." class="btn btn-primary hidden" style="width:100%; height:34px">Subscribe</button>
+            <input type="submit" id="loading-example-btn" data-loading-text="Loading..." class="btn btn-primary" value="Subscribe"  style="width:100%; height:34px"/>
+           </div>
+         </div>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->

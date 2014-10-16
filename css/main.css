@@ -392,6 +392,14 @@ h2.heading {
   background: none;
 }
 
+.modal-dialog.modal-news {
+  width: 500px;
+  margin: 30px auto;
+}
+
+.modal-dialog.modal-news .btn.btn-primary {
+  width: 100%:;
+}
 
 /* ==========================================================================
    Price
