@@ -157,6 +157,10 @@ $count_banner         = count_page_banner();
 $count_banner_default = count_page_banner_default(1);
 $get_banner           = get_page_banner(1);
 $get_banner_default   = get_page_banner_default(1);
+
+
+//echo '<h1>ASD: '.$token_session_id.'</h1>';
+//echo '<h1>TOKEN: '.$count_session_id['rows'].'</h1>';
 ?>
 
 
@@ -385,21 +389,26 @@ $get_banner_default   = get_page_banner_default(1);
 		   
 		   
 		   /* --- NEWSLETTER POPUP --- */
+		   <?php
+		   if($count_session_ids['rows'] > '0' ){
+		   ?>
+		   
 		   $('#myModal').modal();
+		   
+		   <?php
+		   }
+		   ?>
 		   
 		   $('#signup').submit(function() {
 		      
 			  var btn = $('#loading-example-btn');
 			  btn.button('loading');
 			  
-		      //$("#message").html("<span class='error'>Adding your email address...</span>");
+		      
 		      $.ajax({
 			     url: '<?php echo $prefix_url;?>static/subscriber/inc/store-address.php', // proper url to your "store-address.php" file
 			     data: $('#signup').serialize(),
 			     success: function(msg) {
-				    //$('#message').html(msg);
-				    //$('#p-email').slideDown("fast").hide();
-				    //$('#alert-email').val(msg).slideDown("fast");
 				    //alert(msg);
 					btn.button('reset');
 					$('#newsletter-alert').html(msg);
@@ -410,6 +419,15 @@ $get_banner_default   = get_page_banner_default(1);
 		      return false;
 		   });
 		});
+		
+		<?php
+		if($count_session_id['rows'] < '0'){
+		   insert_session_id($token_session_id, 0);
+		}else{
+		   update_session_id('1');
+		}
+		?>
 		</script>
+		
 
     

@@ -768,4 +768,38 @@ if(!isset($_SESSION['global_day']) || $_SESSION['global_day'] == ''){
  *---------------------------------------------------------------
  */
 }
+
+
+session_id();
+
+function count_session_id($id, $count){
+   $conn   = connDB();
+   $sql    = "SELECT COUNT(*) AS rows FROM tbl_session_id WHERE `session_id` = '$id' AND `count` = '$count'";
+   $query  = mysql_query($sql, $conn);
+   $result = mysql_fetch_array($query);
+   
+   return $result;
+}
+
+
+function insert_session_id($id, $count){
+   $conn   = connDB();
+   $sql    = "INSERT INTO tbl_session_id(`session_id`, `count`) VALUES('$id', '$count')";
+   $query  = mysql_query($sql, $conn);
+}
+
+
+function update_session_id($count){
+   $conn   = connDB();
+   $sql    = "UPDATE tbl_session_id SET `count` = '$count'";
+   $query  = mysql_query($sql, $conn);
+}
+
+
+/* --- DEFINED VARIABLE --- */
+$token_session_id = session_id();
+
+/* --- CALL FUNCTION --- */
+$count_session_id  = count_session_id($token_session_id, 0);
+$count_session_ids = count_session_id($token_session_id, 1);
 ?>
