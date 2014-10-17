@@ -22,7 +22,7 @@ function get_dirname($path){
 $prefix_url  = "http://".$_SERVER['HTTP_HOST'].get_dirname($_SERVER['PHP_SELF'])."/";
 ?>
 
-   <img src="<?php echo $prefix_url;?>files/common/bg_intro.png" width="700" style="margin: 150px auto 0; display: block;">
+   <img src="<?php echo $prefix_url;?>files/common/bg_intro.gif" width="700" style="margin: 150px auto 0; display: block;">
 
 </body>
 </html>
