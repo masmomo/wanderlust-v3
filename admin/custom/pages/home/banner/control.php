@@ -40,7 +40,7 @@ if(isset($_POST['btn-pages-home'])){
    if($_POST['btn-pages-home'] == "Save Changes" || $_POST['btn-pages-home'] == "Save Changes & Exit"){
 	
 	/* --- PAGES BANNER --- */
-      $id_array = array('page-banner-1','page-banner-2','page-banner-3','page-banner-4');
+      $id_array = array('page-banner-1','page-banner-2','page-banner-3','page-banner-4', 'page-banner-5', 'page-banner-6');
       foreach($id_array as $id){
 	     
 		 /* -- BANNER -- */

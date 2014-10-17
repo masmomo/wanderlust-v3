@@ -642,6 +642,8 @@ if($_REQUEST['shop_cat_id'] == '15'){
    $page_banner_name = 'page-banner-3';
 }else if($_REQUEST['shop_cat_id'] == '30'){
    $page_banner_name = 'page-banner-4';
+}else{
+   $page_banner_name = 'page-banner-4';
 }
 
 $count_page_banner = count_page_banner($page_banner_name);

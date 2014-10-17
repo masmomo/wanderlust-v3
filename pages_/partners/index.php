@@ -23,13 +23,51 @@ function get_partner(){
 }
 
 
+function count_page_banner($page){
+   $conn   = connDB();
+   $sql    = "SELECT COUNT(*) AS rows FROM tbl_page_banner WHERE `banner_name` = '$page'";
+   $query  = mysql_query($sql, $conn);
+   $result = mysql_fetch_array($query);
+   
+   return $result;
+}
+
+
+function get_page_banner($page){
+   $conn   = connDB();
+   $sql    = "SELECT * FROM tbl_page_banner WHERE `banner_name` = '$page'";
+   $query  = mysql_query($sql, $conn);
+   $result = mysql_fetch_array($query);
+   
+   return $result;
+}
+
+
 /* --- CALL FUNCTION --- */
-$count_partner = count_partner();
-$data_partner  = get_partner();
+$count_partner     = count_partner();
+$data_partner      = get_partner();
+$count_page_banner = count_page_banner('page-banner-6');
+$data_page_banner  = get_page_banner('page-banner-6');
 ?>
 
     <div class="container">
+    
+      <?php
+      if($count_page_banner['rows'] > 0){
+	  ?>
+      
+      <img class="img-responsive m_b_20" src="<?php echo $prefix_url.'admin/static/thimthumb.php?src=../'.$data_page_banner['filename'].'&h=125&w=813&q=80';?>" width="100%">
+      
+      <?php
+	  }else{
+	  ?>
+    
       <img class="img-responsive m_b_20" src="<?php echo $prefix_url;?>files/common/img_small-0.jpg" width="100%">
+      
+      <?php
+	  }
+	  ?>
+      
       <div class="content">
         <div class="row">
         

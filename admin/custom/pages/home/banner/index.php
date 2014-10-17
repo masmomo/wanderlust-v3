@@ -26,6 +26,8 @@ foreach($page_banner as $slider){
       $page_label = 'Accessories';
    }else if($slider['banner_name'] == 'page-banner-5'){
       $page_label = 'Sale';
+   }else if($slider['banner_name'] == 'page-banner-6'){
+      $page_label = 'Partners';
    }
    
 ?>
