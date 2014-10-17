@@ -154,12 +154,7 @@ if(empty($act)){
           </ul>
         </li>
 
-        <li <?php echo $header_pages;?>><a data-toggle="dropdown" href="#">Partner</a>
-          <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-            <li><a href="<?php echo $prefix_url;?>store-city">City</a></li>
-            <li><a href="<?php echo $prefix_url;?>store">Partner</a></li>
-          </ul>
-        </li>
+        <li <?php echo $header_pages;?>><a href="<?php echo $prefix_url;?>store">Partner</a></li>
 
         <li <?php echo $header_pages;?>><a data-toggle="dropdown" href="#">Career</a>
           <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">

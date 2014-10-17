@@ -421,6 +421,11 @@ $get_banner_default   = get_page_banner_default(1);
 		   update_session_id('1');
 		}
 		?>
+		
+		$('img').bind('contextmenu', function (e) {
+		   e.preventDefault();
+		   //alert('Right Click is not allowed');
+		});
 		</script>
 		
 

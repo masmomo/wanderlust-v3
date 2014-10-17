@@ -10,8 +10,8 @@ include('control.php');
       <div class="container clearfix">
         <h1>
           <span class="glyphicon glyphicon-list"></span> &nbsp; 
-          <a href="<?php echo $prefix_url."store"?>">Store</a> 
-          <span class="info">/</span> Add Store
+          <a href="<?php echo $prefix_url."store"?>">Partner</a> 
+          <span class="info">/</span> Add Partner
         </h1>
         <div class="btn-placeholder">
           <input type="hidden" name="cat_id" id="category_id"/>
@@ -41,8 +41,8 @@ include('control.php');
 
       <div class="box row">
         <div class="desc col-xs-3">
-          <h3>Store Details</h3>
-          <p>Your store details.</p>
+          <h3>Partner Details</h3>
+          <p>Your partner details.</p>
         </div>
         <div class="content col-xs-9">
           <ul class="form-set" id="custom_product_category">
@@ -58,7 +58,7 @@ include('control.php');
               </div>
             </li>
             
-            <li class="form-group row">
+            <li class="form-group row hidden">
               <label class="control-label col-xs-3">Visibility</label>
               <div class="col-xs-9">
                 <label class="radio-inline">
@@ -70,7 +70,7 @@ include('control.php');
               </div>
             </li>
             
-            <li class="form-group row" id="lbl_category_department">
+            <li class="form-group row hidden" id="lbl_category_department">
               <label class="control-label col-xs-3">City</label>
               <div class="col-xs-9">
                 <select class="form-control" name="category_department" id="category_department">
@@ -86,24 +86,47 @@ include('control.php');
             <li class="form-group row" id="lbl_category_name">
               <label class="control-label col-xs-3">Store Name</label>
               <div class="col-xs-9">
-                <input type="text" class="form-control" name="category_name" placeholder="ex: Senior Manager" id="id_category_name">
-              </div>
-            </li>
-            
-            <li class="form-group row" id="lbl_category_name">
-              <label class="control-label col-xs-3">Google Maps</label>
-              <div class="col-xs-9">
-                <input type="text" class="form-control" name="category_maps" id="id_category_maps">
+                <input type="text" class="form-control" name="category_name" placeholder="ex: Jakarta" id="id_category_name">
               </div>
             </li>
             
             <li class="form-group row" id="lbl_career_description">
-              <label class="control-label col-xs-3">Description</label>
+              <label class="control-label col-xs-3">Address</label>
               <div class="col-xs-9">
                 <!--<input type="text" class="form-control" name="category_name" placeholder="ex: Jakarta" id="category_name">-->
                 <textarea class="form-control" name="career_description" id="id_career_description" rows="5"></textarea>
               </div>
             </li>
+            
+            <li class="form-group row" id="lbl_category_name">
+              <label class="control-label col-xs-3">Website</label>
+              <div class="col-xs-9">
+                <input type="text" class="form-control" name="category_maps" id="id_category_maps" placeholder="google.com">
+              </div>
+            </li>
+            
+            
+            <li class="form-group row" id="lbl_category_name">
+              <label class="control-label col-xs-3">Email</label>
+              <div class="col-xs-9">
+                <input type="text" class="form-control" name="career_email" id="id_career_email">
+              </div>
+            </li>
+            
+            <li class="form-group row">
+              <label class="control-label col-xs-3">Image</label>
+              <div class="col-xs-9 image">
+                <div class="content img-about-size" id="picture" onclick="openBrowser()" style="background:#eee url(<?php echo $prefix_url;?>files/common/icon_camera@2x.png) no-repeat center;">
+                   <img class="hidden" id="upload-image" width="100%" src="">
+                </div>
+                <p class="help-block">Recommended dimensions of 174 x 120 px.</p>
+                <span id="tester">
+                <input type="file" name="color_image" id="color_files" onchange="readURL(this)" class="hidden"/>
+                </span><!--tester-->
+              </div>
+              <input type="hidden" name="hidden_logo" value="<?php echo $general['logo'];?>">
+            </li>
+            
           </ul>
         </div>
       </div><!--.box-->
@@ -155,4 +178,24 @@ $(document).ready(function(e) {
       validation()
    });
 });
+
+
+function openBrowser(){
+   document.getElementById("color_files").click();
+}
+
+
+function readURL(input) {
+      
+   if (input.files && input.files[0]) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+	     $('#upload-image').removeClass("hidden");
+		 $('#upload-image').attr('src', e.target.result);
+	  }
+	  
+	  reader.readAsDataURL(input.files[0]);
+   }
+	  
+}
 </script>

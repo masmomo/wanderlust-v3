@@ -1,9 +1,9 @@
 <?php
-function insert($post_career_name, $post_category, $post_active, $post_category_visibility, $post_description, $post_category_map){
+function insert($post_career_name, $post_category, $post_active, $post_category_visibility, $post_description, $post_category_map, $website, $email){
    $conn  = connDB();
    
-   $sql   = "INSERT INTO tbl_store (`career_name`, `category`, `active`, `visibility`, `description`, `category_maps`) 
-                              VALUES('$post_career_name', '$post_category', '$post_active', '$post_category_visibility', '$post_description', '$post_category_map')";
+   $sql   = "INSERT INTO tbl_store (`career_name`, `category`, `active`, `visibility`, `description`, `category_maps`, `website`, `email`) 
+                              VALUES('$post_career_name', '$post_category', '$post_active', '$post_category_visibility', '$post_description', '$post_category_map', '$website', '$email')";
    $query = mysql_query($sql, $conn) or die(mysql_query());
 }
 

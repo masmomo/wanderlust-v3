@@ -8,8 +8,8 @@ include('control.php');
           <form method="post">
             <div class="subnav clearfix">
               <div class="container clearfix">
-                <h1><span class="glyphicon glyphicon-list"></span> &nbsp; City</h1>
-                <select class="form-control" id="category_name_search" onchange="selectCategory()" style="width:125px;">
+                <h1><span class="glyphicon glyphicon-list"></span> &nbsp; Partner</h1>
+                <select class="form-control hidden" id="category_name_search" onchange="selectCategory()" style="width:125px;">
                   <option value="all">All City</option>
                   
 				  <?php
@@ -21,7 +21,7 @@ include('control.php');
                 </select>
                 <div class="btn-placeholder">
                   <a href="<?php echo $prefix_url."add-store"?>">
-                    <input type="button" class="btn btn-success btn-sm" value="Add Store">
+                    <input type="button" class="btn btn-success btn-sm" value="Add Partner">
                   </a>
                 </div>
               </div>
@@ -92,8 +92,8 @@ include('control.php');
                        </th>
                        <th class="sort" width="85%" onclick="sortBy('career_name')">Store Name<?php echo $arr_order_number;?></th>
                        <!--<th class="sort" width="10%" onclick="sortBy('total_product')">Jobs</th>-->
-                       <th class="sort" width="10%">City</th>
-                       <th class="sort" width="5%" onclick="sortBy('visibility')">Visibility</th>
+                       <th class="sort hidden" width="10%">City</th>
+                       <th class="sort" width="15%" onclick="sortBy('visibility')">Visibility</th>
                      </tr>
                      
                      <tr class="filter hidden" id="filter">
@@ -143,7 +143,7 @@ include('control.php');
                          <?php echo $all_category['career_name'];?>
                        </a>
                      </td>
-                     <td><?php echo $all_category['category_name'];?></td>
+                     <td class="hidden"><?php echo $all_category['category_name'];?></td>
                      <td>
                      
 					   <?php 
