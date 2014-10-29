@@ -730,7 +730,7 @@ $get_page_banner   = get_page_banner($page_banner_name);
 			  foreach($products as $key=>$products){
               ?>
               
-              <div class="thumb col-xs-4">
+              <div class="shop-thumb thumb col-xs-4">
                 <a href="<?php echo $prefix_url."item/".cleanurl($products['category_name'])."/".$products['product_alias']."/".$products['type_alias'];?>">
                   <div class="content">
                     <div class="loading"></div>
